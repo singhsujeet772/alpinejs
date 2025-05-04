@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Alpine.js To-Do List</title>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .done {
+        text-decoration: line-through;
+        color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <div x-data="todoApp()" class="p-4 max-w-md mx-auto">
+      <h2>📝 My To-Do List</h2>
+
+      <!-- Input field -->
+      <input
+        type="text"
+        x-model="newTask"
+        placeholder="New task..."
+        @keydown.enter="addTask"
+      />
+
+      <!-- Add button -->
+      <button @click="addTask">Add</button>
+
+      <!-- Task List -->
+      <ul style="margin-top: 10px">
+        <template x-for="(task, index) in tasks" :key="index">
+          <li>
+            <input type="checkbox" x-model="task.done" />
+            <span :class="{ 'done': task.done }" x-text="task.text"></span>
+            <button @click="removeTask(index)">❌</button>
+          </li>
+        </template>
+      </ul>
+    </div>
+
+    <!-- Alpine component logic -->
+    <script>
+      function todoApp() {
+        return {
+          newTask: "",
+          tasks: JSON.parse(localStorage.getItem('tasks')) || [],
+          addTask() {
+            if (this.newTask.trim() !== "") {
+              this.tasks.push({ text: this.newTask, done: false });
+              this.newTask = "";
+              localStorage.setItem('tasks', JSON.stringify(this.tasks));
+            }
+          },
+          removeTask(index) {
+            this.tasks.splice(index, 1);
+            localStorage.setItem('tasks', JSON.stringify(this.tasks));
+          }
+        };
+      }
+    </script>
+  </body>
+</html>
